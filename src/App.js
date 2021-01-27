@@ -3,6 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Table, Button, Container, Modal, ModalHeader, ModalBody,FormGroup, ModalFooter,} from "reactstrap"
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 
 const data = [
   { id: 1, producto: "Dell Latitude E6440", descripcion: "Windows 10 Pro; DDR3 1600Mhz 8GB; Core i7 4th-gen", precio: "Lps. 9,500.00"},
@@ -24,6 +26,7 @@ state={
   },
   modalInsertar: false,
   modalEditar: false,
+  modalEliminar: false,
 };
 
 handleChange=e=>{
@@ -51,6 +54,14 @@ ocultarModalEditar=()=>{
   this.setState({modalEditar: false});
 }
 
+mostrarModalEliminar=()=>{
+  this.setState({modalEliminar: true});
+}
+
+ocultarModalEliminar=()=>{
+  this.setState({modalEliminar: false});
+}
+
 insertar=()=>{
   var valorNuevo={...this.state.form};
   valorNuevo.id=this.state.data.length+1;
@@ -74,7 +85,9 @@ editar=(dato)=>{
 }
 
 eliminar=(dato)=>{
-  var opcion=window.confirm("Realmente desea eliminar el registro "+dato.id);
+  var dato = {...this.state.form};
+  dato.id = this.state.data.length;
+  var opcion = dato.id;
   if(opcion){
     var contador=0;
     var lista = this.state.data;
@@ -84,7 +97,7 @@ eliminar=(dato)=>{
       }
       contador++;
     });
-    this.setState({data: lista});
+    this.setState({data: lista, modalEliminar: false});
   }
 }
 
@@ -116,8 +129,8 @@ render(){
                 <td>{elemento.descripcion}</td>
                 <td>{elemento.precio}</td>
                 <td>
-                  <Button color="primary" onClick={()=>this.mostrarModalEditar(elemento)}>Editar</Button>{"  "}
-                  <Button color="danger" onClick={()=>this.eliminar(elemento)}>Eliminar</Button>
+                  <Button color="primary" onClick={()=>this.mostrarModalEditar(elemento)}><FontAwesomeIcon icon={faEdit} /></Button>{"  "}
+                  <Button color="danger" onClick={()=>this.mostrarModalEliminar()}><FontAwesomeIcon icon={faTrashAlt} /></Button>
                 </td>
               </tr>
             ))}
@@ -192,6 +205,17 @@ render(){
               <Button color="primary" onClick={()=>this.editar(this.state.form)} >Editar</Button>
               <Button color="danger" onClick={()=>this.ocultarModalEditar()} >Cancelar</Button>
             </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={this.state.modalEliminar}>
+        <ModalBody>
+          Esta seguro de eliminar este registro
+        </ModalBody>
+
+        <ModalFooter>
+          <Button color="danger" onClick={()=>this.eliminar()}>Si</Button>
+          <Button color="primary" onClick={()=>this.ocultarModalEliminar()}>No</Button>
+        </ModalFooter>
       </Modal>
     </>
     )
